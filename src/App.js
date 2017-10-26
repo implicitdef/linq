@@ -1,39 +1,10 @@
 import React, { Component } from 'react';
 import './App.css';
+import * as _ from 'lodash';
 
 
-
-
-const PlayerScreen = ({number, word, isRevealed, onReveal, onHide, onForward, onBack}) => (
-  <div>
-    <button onClick={onBack}>
-      Joueur précédent
-    </button>
-    <h1>Joueur n°{number}</h1>
-    <button onClick={onForward}>
-      Joueur suivant
-    </button>
-    <div>
-      {isRevealed &&
-        <div onClick={onHide}>
-          {
-            word ? 
-              <pre>{word}</pre>
-              <p>Contre-espion</p>
-          }
-        </div>
-      }
-      {isRevealed || 
-        <button onClick={onReveal}>
-          Clique-ici pour révéler
-        </button>
-      }
-    </div>
-  </div>
-)
-
-
-class StatefulPlayerScreen extends Component {
+window._ = _;
+class PlayerScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -41,40 +12,119 @@ class StatefulPlayerScreen extends Component {
     };
   }
   
+  reveal = () => {
+    this.setState({isRevealed: true});
+  }
+
+  hide = () => {
+    this.setState({isRevealed: false});
+  }
+
   render() {
-    return <PlayerScreen
-      number={this.props.number}
-      word={this.props.word}
-      onBack={this.props.onBack}
-      onForward={this.props.onForward}
-      isRevealed={this.state.isRevealed}
-      onReveal={() => {this.setState({isRevealed: true});}}
-      onHide={() => {this.setState({isRevealed: false});}}
-    />
+    const {number, word, onForward, onBack} = this.props;
+    const {isRevealed} = this.state;
+    return <div>
+      {
+        onBack && <button onClick={() => {this.hide(); onBack();}}>
+          Joueur précédent
+        </button>
+      }
+      <h1>Joueur n°{number}</h1>
+      {
+        onForward && <button onClick={() => {this.hide(); onForward();}}>
+          Joueur suivant
+        </button>
+      }
+      <div>
+        {isRevealed &&
+          <div onClick={this.hide}>
+            {
+              word ? 
+                <pre>{word}</pre> :
+                <p>Contre-espion</p>
+            }
+          </div>
+        }
+        {isRevealed || 
+          <button onClick={this.reveal}>
+            Clique-ici pour révéler
+          </button>
+        }
+      </div>
+    </div>;
   }
 }
 
-const PlayerScreens = ({words, currentPlayerNumber, onBack, onForward}) => (
-  <PlayerScreen
-    word={words[currentPlayerNumber]}
-    number={currentPlayerNumber + 1}
-    onBack={onBack}
-    onForward={onForward}
-  />
-);
+const IntroScreen = ({onChoosingNumberOfPlayers}) => {
+  const options = _.range(3, 20);  
+  return <div>
+    <p>Pick a number of players</p>
+    <select onChange={(e) => onChoosingNumberOfPlayers(parseInt(e.target.value, 10))}>
+      {
+        options.map((n) => (
+          <option key={n} value={n}>{n}</option>
+        ))
+      }
+    </select>
+  </div>
+};
 
 
+class FullSteps extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      numberOfPlayers: null,
+      currentPlayerIndex: null,
+      words: null
+    };
+  }
+
+  onChoosingNumberOfPlayers = (nb) => {
+    const words = new Array(nb);
+    words.fill(null);
+    words[0] = this.props.secretWord;
+    words[1] = this.props.secretWord;
+    this.setState({
+      numberOfPlayers: nb,
+      currentPlayerIndex: 0,
+      words: _.shuffle(words)
+    })
+  };
+
+  onBack = () => {
+    this.setState({
+      currentPlayerIndex: this.state.currentPlayerIndex - 1
+    })
+  }
+
+  onForward = () => {
+    this.setState({
+      currentPlayerIndex: this.state.currentPlayerIndex + 1
+    })
+  }
+
+  render() {
+    if (this.state.numberOfPlayers === null){
+      return <IntroScreen
+        onChoosingNumberOfPlayers={this.onChoosingNumberOfPlayers}
+      />
+    }
+    return <PlayerScreen
+      number={this.state.currentPlayerIndex + 1}
+      word={this.state.words[this.state.currentPlayerIndex]}
+      onBack={this.state.currentPlayerIndex > 0 ? this.onBack : null}
+      onForward={this.state.currentPlayerIndex < this.state.numberOfPlayers - 1 ? this.onForward : null}
+    />;
+  }
+}
 
 class App extends Component {
   render() {
     return (
       <div className="App">
-        <header className="App-header">
-          <h1 className="App-title">test</h1>
-        </header>
-        <p className="App-intro">
-          testtest
-        </p>
+        <h1>Test</h1>
+        <FullSteps secretWord={"Funk"}/>
       </div>
     );
   }
