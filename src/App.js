@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import './App.css';
 import * as _ from 'lodash';
 
-
-window._ = _;
 class PlayerScreen extends Component {
   constructor(props) {
     super(props);
@@ -23,32 +21,29 @@ class PlayerScreen extends Component {
   render() {
     const {number, word, onForward, onBack} = this.props;
     const {isRevealed} = this.state;
-    return <div>
-      {
-        onBack && <button onClick={() => {this.hide(); onBack();}}>
-          Joueur précédent
-        </button>
-      }
-      <h1>Joueur n°{number}</h1>
-      {
-        onForward && <button onClick={() => {this.hide(); onForward();}}>
-          Joueur suivant
-        </button>
-      }
-      <div>
-        {isRevealed &&
-          <div onClick={this.hide}>
-            {
-              word ? 
-                <pre>{word}</pre> :
-                <p>Contre-espion</p>
-            }
-          </div>
-        }
-        {isRevealed || 
-          <button onClick={this.reveal}>
-            Clique-ici pour révéler
+    return <div className="screen player-screen">
+      <div className="player-title">
+        {
+          onBack && <button onClick={() => {this.hide(); onBack();}}>
+            {'<<'}
           </button>
+        }
+        <h1>Joueur n°{number}</h1>
+        {
+          onForward && <button onClick={() => {this.hide(); onForward();}}>
+            >>
+          </button>
+        }
+      </div>
+      <div className="revealer">
+        {isRevealed ?
+          (word ? 
+            <pre onClick={this.hide}>{word}</pre> :
+            <p onClick={this.hide}>Contre-espion</p>
+          ) :
+          <button onClick={this.reveal}>
+          Clique pour révéler
+        </button>
         }
       </div>
     </div>;
@@ -57,7 +52,8 @@ class PlayerScreen extends Component {
 
 const IntroScreen = ({onChoosingNumberOfPlayers}) => {
   const options = _.range(3, 20);  
-  return <div>
+  return <div className="screen intro-screen">
+    <h1>Test</h1>
     <p>Pick a number of players</p>
     <select onChange={(e) => onChoosingNumberOfPlayers(parseInt(e.target.value, 10))}>
       {
@@ -65,7 +61,7 @@ const IntroScreen = ({onChoosingNumberOfPlayers}) => {
           <option key={n} value={n}>{n}</option>
         ))
       }
-    </select>
+    </select>    
   </div>
 };
 
@@ -122,8 +118,7 @@ class FullSteps extends Component {
 class App extends Component {
   render() {
     return (
-      <div className="App">
-        <h1>Test</h1>
+      <div>
         <FullSteps secretWord={"Funk"}/>
       </div>
     );
