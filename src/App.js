@@ -1,6 +1,15 @@
 import React, { Component } from 'react';
 import './App.css';
 import * as _ from 'lodash';
+import availableWordsString from './words';
+
+const availableWords = availableWordsString
+  .split('\n')
+  .map(s => s.trim())
+  .filter((s) => s.length > 0);
+window.availableWords = availableWords;
+
+const secretWord = _.sample(availableWords);
 
 class PlayerScreen extends Component {
   constructor(props) {
@@ -65,7 +74,6 @@ const IntroScreen = ({onChoosingNumberOfPlayers}) => {
   </div>
 };
 
-
 class FullSteps extends Component {
   constructor(props) {
     super(props);
@@ -119,7 +127,7 @@ class App extends Component {
   render() {
     return (
       <div>
-        <FullSteps secretWord={"Funk"}/>
+        <FullSteps secretWord={secretWord}/>
       </div>
     );
   }
