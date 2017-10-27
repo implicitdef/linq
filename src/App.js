@@ -3,12 +3,13 @@ import './App.css';
 import * as _ from 'lodash';
 import availableWordsString from './words';
 
-const availableWords = availableWordsString
-  .split('\n')
-  .map(s => s.trim())
-  .filter((s) => s.length > 0);
-window.availableWords = availableWords;
-
+const availableWords = _.uniq(
+    availableWordsString
+    .split('\n')
+    .map(s => s.trim())
+    .filter((s) => s.length > 0)
+);
+console.log(availableWords);
 const secretWord = _.sample(availableWords);
 
 class PlayerScreen extends Component {
