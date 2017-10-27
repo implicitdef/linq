@@ -9,7 +9,6 @@ const availableWords = _.uniq(
     .map(s => s.trim())
     .filter((s) => s.length > 0)
 );
-console.log(availableWords);
 const secretWord = _.sample(availableWords);
 
 class PlayerScreen extends Component {
@@ -48,7 +47,7 @@ class PlayerScreen extends Component {
       <div className="revealer">
         {isRevealed ?
           (word ? 
-            <pre onClick={this.hide}>{word}</pre> :
+            <p onClick={this.hide}>Espion: <span className="word">{word}</span></p> :
             <p onClick={this.hide}>Contre-espion</p>
           ) :
           <button onClick={this.reveal}>
@@ -61,11 +60,22 @@ class PlayerScreen extends Component {
 }
 
 const IntroScreen = ({onChoosingNumberOfPlayers}) => {
-  const options = _.range(3, 20);  
+  const options = _.range(3, 20);
+  const onChange = (e) => {
+    const nb = parseInt(e.target.value, 10)
+    if (nb !== -1) {
+      onChoosingNumberOfPlayers(nb);
+    }
+  }
   return <div className="screen intro-screen">
-    <h1>Test</h1>
-    <p>Pick a number of players</p>
-    <select onChange={(e) => onChoosingNumberOfPlayers(parseInt(e.target.value, 10))}>
+    <h1>Linq</h1>
+    <p className="description">
+      Un mot secret a été choisi au chargement de cette page, parmi {availableWords.length} mots possibles. <br/><br/>
+      Indiquez le nombre de joueurs, puis passez le téléphone de joueur en joueur, pour que chacun regarde discrètement
+      son rôle.
+    </p>
+    <select onChange={onChange}>
+      <option key={-1} value={-1}>Nombre de joueurs ?</option>
       {
         options.map((n) => (
           <option key={n} value={n}>{n}</option>

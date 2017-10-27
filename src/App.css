@@ -52,6 +52,7 @@ table {
 
 html, body, #root, #root > div, .screen {
   height: 100%;
+  font-family: sans-serif;
 }
 
 body {
@@ -67,6 +68,13 @@ h1 {
 .screen {
   display: flex;
   flex-direction: column;
+}
+
+.description {
+  font-size: 0.8em;
+  margin: 20px;
+  color: darkgray;
+  text-align: left;
 }
 
 select {
@@ -113,10 +121,13 @@ button {
   flex-grow: 1;
 }
 
-.revealer pre, .revealer p {
+.revealer p {
   border: 2px dashed gray;
   padding: 20px 10px;
   margin: 50px;
   flex-grow: 1;
   vertical-align: middle;
+}
+.revealer .word {
+  font-family: courier;
 }
